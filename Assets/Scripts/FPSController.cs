@@ -15,6 +15,10 @@ public class FPSController : MonoBehaviour
     float rotationX = 0;
     public bool canMove = true;
     CharacterController characterController;
+    public Animator swordAnimator;
+    public Animator shieldAnimator;
+    public GameObject walkingAudio;
+    public GameObject runningAudio;
 
     void Start()
     {
@@ -26,7 +30,7 @@ public class FPSController : MonoBehaviour
     void Update()
     {
 
-        #region Handles Movment
+        #region Handles Movement
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
 
@@ -68,5 +72,32 @@ public class FPSController : MonoBehaviour
         }
 
         #endregion
+
+        #region Handles Animation
+        float absCurSpeedX = Mathf.Abs(curSpeedX);
+        float absCurSpeedY = Mathf.Abs(curSpeedY);
+        float fasterDirection = absCurSpeedX > absCurSpeedY ? absCurSpeedX : absCurSpeedY;
+        float moveSpeed = Mathf.Clamp(fasterDirection, .1f, 12f) / 6;
+        swordAnimator.SetFloat("moveSpeed", moveSpeed);
+        shieldAnimator.SetFloat("moveSpeed", moveSpeed);
+        #endregion
+
+        if (moveSpeed > 1.5f && characterController.isGrounded)
+        {
+            runningAudio.SetActive(true);
+            walkingAudio.SetActive(false);
+            Debug.Log("asd");
+        }
+        else if (moveSpeed > .5f && characterController.isGrounded)
+        {
+            walkingAudio.SetActive(true);
+            runningAudio.SetActive(false);
+
+        }
+        else
+        {
+            walkingAudio.SetActive(false);
+            runningAudio.SetActive(false);
+        }
     }
 }

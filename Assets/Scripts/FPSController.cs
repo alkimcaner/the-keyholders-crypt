@@ -86,7 +86,6 @@ public class FPSController : MonoBehaviour
         {
             runningAudio.SetActive(true);
             walkingAudio.SetActive(false);
-            Debug.Log("asd");
         }
         else if (moveSpeed > .5f && characterController.isGrounded)
         {

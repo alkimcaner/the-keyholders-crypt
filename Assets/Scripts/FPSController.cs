@@ -73,7 +73,7 @@ public class FPSController : MonoBehaviour
 
         #endregion
 
-        #region Handles Animation
+        #region Handles Animation Speed
         float absCurSpeedX = Mathf.Abs(curSpeedX);
         float absCurSpeedY = Mathf.Abs(curSpeedY);
         float fasterDirection = absCurSpeedX > absCurSpeedY ? absCurSpeedX : absCurSpeedY;
@@ -82,6 +82,7 @@ public class FPSController : MonoBehaviour
         shieldAnimator.SetFloat("moveSpeed", moveSpeed);
         #endregion
 
+        #region Handles Footstep
         if (moveSpeed > 1.5f && characterController.isGrounded)
         {
             runningAudio.SetActive(true);
@@ -98,5 +99,6 @@ public class FPSController : MonoBehaviour
             walkingAudio.SetActive(false);
             runningAudio.SetActive(false);
         }
+        #endregion
     }
 }

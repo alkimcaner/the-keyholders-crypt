@@ -10,14 +10,17 @@ public class Enemy : MonoBehaviour
     NavMeshAgent agent;
     bool isChasing = false;
     public int chasingDistance = 50;
-    public int health = 100;
+    public float health = 100;
+    float initialHealth;
     public bool isRanged = false;
-    public GameObject bullet;
+    public Rigidbody projectile;
     public Animator skeletonAnimator;
     public GameObject healthBar;
 
     void Start()
     {
+        initialHealth = health;
+
         agent = GetComponent<NavMeshAgent>();
 
         if (isRanged)
@@ -40,7 +43,7 @@ public class Enemy : MonoBehaviour
 
         agent.SetDestination(target.position);
 
-        if (Vector3.Distance(transform.position, target.position) < chasingDistance)
+        if (Vector3.Distance(transform.position, target.position) < chasingDistance && agent.pathStatus == NavMeshPathStatus.PathComplete && agent.hasPath)
         {
             agent.isStopped = false;
             isChasing = true;
@@ -53,7 +56,7 @@ public class Enemy : MonoBehaviour
             skeletonAnimator.SetBool("isChasing", false);
         }
 
-        float interpolatedX = Mathf.Lerp(healthBar.transform.localScale.x, (float)health / 100, Time.deltaTime * 10);
+        float interpolatedX = Mathf.Lerp(healthBar.transform.localScale.x, health / initialHealth, Time.deltaTime * 10);
         healthBar.transform.localScale = new Vector3(interpolatedX, 1, 1);
 
         if (health <= 0)
@@ -73,13 +76,10 @@ public class Enemy : MonoBehaviour
         {
             if (isChasing)
             {
-                GameObject currentBullet = Instantiate(bullet);
-                Rigidbody bulletRigidbody = currentBullet.GetComponent<Rigidbody>();
-                currentBullet.transform.LookAt(target);
-                bulletRigidbody.velocity = transform.forward * Time.deltaTime * 10;
-                yield return new WaitForSeconds(2);
-                Destroy(currentBullet);
+                Rigidbody clone = Instantiate(projectile, transform.position + transform.TransformDirection(new Vector3(0, 1, 2)), transform.rotation);
+                clone.velocity = transform.forward * 50;
             }
+            yield return new WaitForSeconds(2);
         }
     }
 }

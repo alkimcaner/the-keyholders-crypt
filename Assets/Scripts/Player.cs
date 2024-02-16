@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
     public AudioSource blockSound;
     public AudioSource hurtSound;
     public AudioSource doorSound;
-    public int health = 100;
+    public float health = 100;
     public int gold = 0;
     public int damage = 10;
     [SerializeField] private TMP_Text coinText;
@@ -45,7 +45,7 @@ public class Player : MonoBehaviour
         hasRedKey = Convert.ToBoolean(PlayerPrefs.GetInt("hasRedKey", 0));
         hasBlueKey = Convert.ToBoolean(PlayerPrefs.GetInt("hasBlueKey", 0));
         hasGreenKey = Convert.ToBoolean(PlayerPrefs.GetInt("hasGreenKey", 0));
-        health = PlayerPrefs.GetInt("health", 100);
+        health = PlayerPrefs.GetFloat("health", 100);
         gold = PlayerPrefs.GetInt("gold", 0);
         damage = PlayerPrefs.GetInt("damage", 20);
     }
@@ -54,7 +54,7 @@ public class Player : MonoBehaviour
     {
         // Update UI
         coinText.text = gold.ToString();
-        healthBar.value = Mathf.Lerp(healthBar.value, (float)health / 100, Time.deltaTime * 10);
+        healthBar.value = Mathf.Lerp(healthBar.value, health / 100, Time.deltaTime * 10);
 
         #region Handles Block
         if (Input.GetButton("Fire2") && !isAttack)
@@ -133,8 +133,6 @@ public class Player : MonoBehaviour
 
                         damage += 10;
                         PlayerPrefs.SetInt("damage", damage);
-
-                        Debug.Log("upgrade weapon");
                     }
                     break;
                 case "Innkeeper":
@@ -146,12 +144,12 @@ public class Player : MonoBehaviour
                         PlayerPrefs.SetInt("gold", gold);
 
                         health = 100;
-                        PlayerPrefs.SetInt("health", health);
-
-                        Debug.Log("sleep");
+                        PlayerPrefs.SetFloat("health", health);
                     }
                     break;
                 case "Door":
+                    interactionText.text = "Interact";
+
                     if (Input.GetKeyDown("e"))
                     {
                         Door door = interactionHit.transform.GetComponent<Door>();
@@ -226,14 +224,14 @@ public class Player : MonoBehaviour
             else
             {
                 health -= 10;
-                PlayerPrefs.SetInt("health", health);
+                PlayerPrefs.SetFloat("health", health);
 
                 hurtSound.Play();
 
                 if (health <= 0)
                 {
                     health = 100;
-                    PlayerPrefs.SetInt("health", health);
+                    PlayerPrefs.SetFloat("health", health);
 
                     gold = 0;
                     PlayerPrefs.SetInt("gold", gold);

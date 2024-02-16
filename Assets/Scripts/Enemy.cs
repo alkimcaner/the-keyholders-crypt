@@ -7,34 +7,53 @@ using UnityEngine.AI;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] private Transform target;
-    NavMeshAgent navMesh;
-    public int chasingDistance = 10;
+    NavMeshAgent agent;
+    bool isChasing = false;
+    public int chasingDistance = 50;
     public int health = 100;
+    public bool isRanged = false;
+    public GameObject bullet;
     public Animator skeletonAnimator;
     public GameObject healthBar;
 
     void Start()
     {
-        navMesh = GetComponent<NavMeshAgent>();
+        agent = GetComponent<NavMeshAgent>();
+
+        if (isRanged)
+        {
+            StartCoroutine(RangedAttack());
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        navMesh.SetDestination(target.position);
+        if (agent.isOnOffMeshLink)
+        {
+            agent.speed = 1.75f;
+        }
+        else
+        {
+            agent.speed = 3.5f;
+        }
+
+        agent.SetDestination(target.position);
 
         if (Vector3.Distance(transform.position, target.position) < chasingDistance)
         {
-            navMesh.isStopped = false;
+            agent.isStopped = false;
+            isChasing = true;
             skeletonAnimator.SetBool("isChasing", true);
         }
         else
         {
-            navMesh.isStopped = true;
+            agent.isStopped = true;
+            isChasing = false;
             skeletonAnimator.SetBool("isChasing", false);
         }
 
-        float interpolatedX = Mathf.Lerp(healthBar.transform.localScale.x, (float)health / 100, .1f);
+        float interpolatedX = Mathf.Lerp(healthBar.transform.localScale.x, (float)health / 100, Time.deltaTime * 10);
         healthBar.transform.localScale = new Vector3(interpolatedX, 1, 1);
 
         if (health <= 0)
@@ -42,8 +61,25 @@ public class Enemy : MonoBehaviour
             Destroy(gameObject);
 
             Player player = target.gameObject.GetComponent<Player>();
-            player.coin += 3;
+            player.gold += 5;
+            PlayerPrefs.SetInt("gold", player.gold);
         }
 
+    }
+
+    IEnumerator RangedAttack()
+    {
+        while (true)
+        {
+            if (isChasing)
+            {
+                GameObject currentBullet = Instantiate(bullet);
+                Rigidbody bulletRigidbody = currentBullet.GetComponent<Rigidbody>();
+                currentBullet.transform.LookAt(target);
+                bulletRigidbody.velocity = transform.forward * Time.deltaTime * 10;
+                yield return new WaitForSeconds(2);
+                Destroy(currentBullet);
+            }
+        }
     }
 }

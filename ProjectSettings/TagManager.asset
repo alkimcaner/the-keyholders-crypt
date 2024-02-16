@@ -4,9 +4,14 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - horse
-  - blacksmith
-  - merchant
+  - Door
+  - RedKey
+  - GreenKey
+  - BlueKey
+  - Horse
+  - Blacksmith
+  - Innkeeper
+  - Exit
   layers:
   - Default
   - TransparentFX
@@ -15,7 +20,7 @@ TagManager:
   - Water
   - UI
   - Enemy
-  - Interaction
+  - Interactable
   - 
   - 
   - 

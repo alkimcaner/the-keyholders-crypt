@@ -37,7 +37,7 @@ public class Player : MonoBehaviour
     private bool isBlocking = false;
     private Vector3 knockback = Vector3.zero;
     private bool isVulnerable = true;
-    private int distance = 3;
+    private float distance = 2.5f;
     private LayerMask enemyLayer;
     private LayerMask interactableLayer;
     public GameObject dialogueObject;

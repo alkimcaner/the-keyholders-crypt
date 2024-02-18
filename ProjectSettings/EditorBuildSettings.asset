@@ -14,4 +14,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Crypt.unity
     guid: 226e42f13349008499f54f2d8af3b543
+  - enabled: 1
+    path: Assets/Scenes/GameOver.unity
+    guid: cb7dff005bc98de42a8cf75966fe7c22
+  - enabled: 1
+    path: Assets/Scenes/Ending.unity
+    guid: a07a9a95bed7c7c4da07a707bee9c512
   m_configObjects: {}

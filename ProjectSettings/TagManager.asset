@@ -15,6 +15,9 @@ TagManager:
   - BossDoor
   - Boss
   - KeySeller
+  - Waypoint
+  - Skeleton
+  - BossKey
   layers:
   - Default
   - TransparentFX

@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
+    void Start()
+    {
+        StartCoroutine(TimedDestroy());
+    }
     void Update()
     {
         transform.Rotate(0, 0, Time.deltaTime * 500, Space.World);
@@ -11,5 +15,12 @@ public class Projectile : MonoBehaviour
     void OnCollisionEnter()
     {
         Destroy(gameObject);
+    }
+
+    IEnumerator TimedDestroy()
+    {
+        yield return new WaitForSeconds(2);
+        Destroy(gameObject);
+
     }
 }

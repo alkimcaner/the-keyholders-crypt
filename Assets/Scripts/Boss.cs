@@ -8,7 +8,7 @@ public class Boss : MonoBehaviour
     [SerializeField] private Transform target;
     public bool isAttacking = false;
     float initialHealth;
-    public float health = 500;
+    public float health = 300;
     public Rigidbody projectile;
     public GameObject healthBarObject;
 
@@ -29,8 +29,9 @@ public class Boss : MonoBehaviour
 
         if (health <= 0)
         {
-            Destroy(gameObject);
-            SceneManager.LoadScene("Ending");
+            isAttacking = false;
+            StartCoroutine(Dialogue.ShowDialogue(4));
+            StartCoroutine(Ending());
         }
 
         transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
@@ -48,5 +49,11 @@ public class Boss : MonoBehaviour
             }
             yield return new WaitForSeconds(1.5f);
         }
+    }
+
+    IEnumerator Ending()
+    {
+        yield return new WaitForSeconds(4);
+        SceneManager.LoadScene("Ending");
     }
 }

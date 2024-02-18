@@ -10,11 +10,14 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public Boss boss;
+    public BossKey[] bossKeys;
+    int vulnerableBossKey = 0;
     public GameObject trailObject;
     public Animator swordAnimator;
     public Animator shieldAnimator;
     public Camera playerCamera;
     public AudioSource hitSound;
+    public AudioSource metalHitSound;
     public AudioSource swingSound;
     public AudioSource blockSound;
     public AudioSource hurtSound;
@@ -40,14 +43,6 @@ public class Player : MonoBehaviour
     private float distance = 2.5f;
     private LayerMask enemyLayer;
     private LayerMask interactableLayer;
-    public GameObject dialogueObject;
-    public TMP_Text dialogueText;
-    private string[] lines = {
-        "I wonder what's behind that door...",
-        "I found these keys at the barn. I can sell them to you if you want.",
-        "HAHA! I fooled you! You've paid a lot gold for those keys. Now it's time to pay with your life.",
-        "I need more gold."
-        };
 
     void Start()
     {
@@ -105,9 +100,21 @@ public class Player : MonoBehaviour
             RaycastHit attackHit;
             if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out attackHit, distance, enemyLayer))
             {
-                Enemy enemy = attackHit.transform.gameObject.GetComponent<Enemy>();
-                enemy.health -= damage;
-                hitSound.Play();
+                if (attackHit.transform.CompareTag("Skeleton"))
+                {
+                    Skeleton skeleton = attackHit.transform.gameObject.GetComponent<Skeleton>();
+                    skeleton.health -= damage;
+                    hitSound.Play();
+                }
+                else if (attackHit.transform.CompareTag("BossKey"))
+                {
+                    BossKey bossKey = attackHit.transform.gameObject.GetComponent<BossKey>();
+                    if (bossKey.isVulnerable)
+                    {
+                        bossKey.health -= damage;
+                        metalHitSound.Play();
+                    }
+                }
             }
         }
         #endregion
@@ -151,7 +158,7 @@ public class Player : MonoBehaviour
                     }
                     else if (Input.GetKeyDown("e"))
                     {
-                        StartCoroutine(StartDialogue(3));
+                        StartCoroutine(Dialogue.ShowDialogue(0));
                     }
                     break;
                 case "Innkeeper":
@@ -169,7 +176,7 @@ public class Player : MonoBehaviour
                     }
                     else if (Input.GetKeyDown("e"))
                     {
-                        StartCoroutine(StartDialogue(3));
+                        StartCoroutine(Dialogue.ShowDialogue(0));
                     }
                     break;
                 case "KeySeller":
@@ -177,7 +184,7 @@ public class Player : MonoBehaviour
 
                     if (Input.GetKeyDown("e"))
                     {
-                        StartCoroutine(StartDialogue(1));
+                        StartCoroutine(Dialogue.ShowDialogue(2));
                     }
                     break;
                 case "Boss":
@@ -185,7 +192,7 @@ public class Player : MonoBehaviour
 
                     if (Input.GetKeyDown("e"))
                     {
-                        StartCoroutine(StartDialogue(2));
+                        StartCoroutine(Dialogue.ShowDialogue(3));
                         StartCoroutine(StartBossSequence());
                     }
                     break;
@@ -210,7 +217,7 @@ public class Player : MonoBehaviour
                     }
                     else if (Input.GetKeyDown("e"))
                     {
-                        StartCoroutine(StartDialogue(0));
+                        StartCoroutine(Dialogue.ShowDialogue(1));
                     }
                     break;
                 case "RedKey":
@@ -228,7 +235,7 @@ public class Player : MonoBehaviour
                     }
                     else if (Input.GetKeyDown("e"))
                     {
-                        StartCoroutine(StartDialogue(3));
+                        StartCoroutine(Dialogue.ShowDialogue(0));
                     }
                     break;
                 case "GreenKey":
@@ -246,7 +253,8 @@ public class Player : MonoBehaviour
                     }
                     else if (Input.GetKeyDown("e"))
                     {
-                        StartCoroutine(StartDialogue(3));
+                        StartCoroutine(Dialogue.ShowDialogue(0));
+
                     }
                     break;
                 case "BlueKey":
@@ -264,7 +272,7 @@ public class Player : MonoBehaviour
                     }
                     else if (Input.GetKeyDown("e"))
                     {
-                        StartCoroutine(StartDialogue(3));
+                        StartCoroutine(Dialogue.ShowDialogue(0));
                     }
                     break;
                 default:
@@ -304,7 +312,7 @@ public class Player : MonoBehaviour
                     gold = 0;
                     PlayerPrefs.SetInt("gold", gold);
 
-                    SceneManager.LoadScene("MainMenu");
+                    SceneManager.LoadScene("GameOver");
                 }
             }
 
@@ -328,22 +336,44 @@ public class Player : MonoBehaviour
         isVulnerable = true;
     }
 
-    IEnumerator StartDialogue(int lineIndex)
-    {
-        if (!dialogueObject.activeInHierarchy)
-        {
-            dialogueText.text = lines[lineIndex];
-            dialogueObject.SetActive(true);
-            yield return new WaitForSeconds(3);
-            dialogueObject.SetActive(false);
-        }
-    }
-
     IEnumerator StartBossSequence()
     {
         yield return new WaitForSeconds(3);
         boss.isAttacking = true;
+        StartCoroutine(BossKeyLoop());
         music.pitch = 1.25f;
+    }
+
+    IEnumerator BossKeyLoop()
+    {
+        while (true)
+        {
+            if (vulnerableBossKey == 0)
+            {
+                bossKeys[0].isVulnerable = true;
+                bossKeys[1].isVulnerable = false;
+                bossKeys[2].isVulnerable = false;
+            }
+            else if (vulnerableBossKey == 1)
+            {
+                bossKeys[0].isVulnerable = false;
+                bossKeys[1].isVulnerable = true;
+                bossKeys[2].isVulnerable = false;
+            }
+            else if (vulnerableBossKey == 2)
+            {
+                bossKeys[0].isVulnerable = false;
+                bossKeys[1].isVulnerable = false;
+                bossKeys[2].isVulnerable = true;
+            }
+
+            vulnerableBossKey++;
+            if (vulnerableBossKey > bossKeys.Length - 1)
+            {
+                vulnerableBossKey = 0;
+            }
+            yield return new WaitForSeconds(10);
+        }
     }
 
 }

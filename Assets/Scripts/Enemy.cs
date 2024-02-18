@@ -10,15 +10,18 @@ public class Enemy : MonoBehaviour
     NavMeshAgent agent;
     bool isChasing = false;
     public int chasingDistance = 50;
-    public float health = 100;
     float initialHealth;
+    public float health = 100;
     public bool isRanged = false;
     public Rigidbody projectile;
     public Animator skeletonAnimator;
-    public GameObject healthBar;
+    public GameObject healthBarObject;
+    public GameObject smokeObject;
 
     void Start()
     {
+        target = GameObject.Find("Player").transform;
+
         initialHealth = health;
 
         agent = GetComponent<NavMeshAgent>();
@@ -56,8 +59,8 @@ public class Enemy : MonoBehaviour
             skeletonAnimator.SetBool("isChasing", false);
         }
 
-        float interpolatedX = Mathf.Lerp(healthBar.transform.localScale.x, health / initialHealth, Time.deltaTime * 10);
-        healthBar.transform.localScale = new Vector3(interpolatedX, 1, 1);
+        float interpolatedX = Mathf.Lerp(healthBarObject.transform.localScale.x, health / initialHealth, Time.deltaTime * 10);
+        healthBarObject.transform.localScale = new Vector3(interpolatedX, 1, 1);
 
         if (health <= 0)
         {
@@ -66,6 +69,8 @@ public class Enemy : MonoBehaviour
             Player player = target.gameObject.GetComponent<Player>();
             player.gold += 5;
             PlayerPrefs.SetInt("gold", player.gold);
+
+            Instantiate(smokeObject, transform.position + transform.TransformDirection(new Vector3(0, 1, 0)), transform.rotation);
         }
 
     }

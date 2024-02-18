@@ -12,6 +12,9 @@ TagManager:
   - Blacksmith
   - Innkeeper
   - Exit
+  - BossDoor
+  - Boss
+  - KeySeller
   layers:
   - Default
   - TransparentFX

@@ -165,9 +165,10 @@ MonoBehaviour:
   chasingDistance: 50
   health: 100
   isRanged: 0
-  projectile: {fileID: 0}
+  projectile: {fileID: 6867706455449173410, guid: bed2087c4ca30664a9c0f4561e5ff357, type: 3}
   skeletonAnimator: {fileID: 1483688450753682320}
-  healthBar: {fileID: 4434627764686030753}
+  healthBarObject: {fileID: 4434627764686030753}
+  smokeObject: {fileID: 404589855121808162, guid: accf8cb970a745a44a8a402659e326e7, type: 3}
 --- !u!195 &5823267456907336008
 NavMeshAgent:
   m_ObjectHideFlags: 0
